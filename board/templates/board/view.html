@@ -1,0 +1,63 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>View Panel</title>
+</head>
+<body>
+  This is the obs View file.
+  Initialize the websocket from here, connect everything and set up the layout.
+  The websocket url should include the game_id, so that when we're accepting
+  the connection in the consumer, we know which game_id this channel is meant
+  to be associated with. This is prepped and sent from the "views.getView" function
+  which always has a game_id attribute.
+  Message types:
+    home_team
+    away_team
+    score
+    down
+    quarter
+
+    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
+    <input id="chat-message-input" type="text" size="100"><br>
+    <input id="chat-message-submit" type="button" value="Send">
+    {{ game_id|json_script:"game-id" }}
+    <script>
+        const game_id = JSON.parse(document.getElementById('game-id').textContent);
+
+        const viewSocket = new WebSocket(
+            'ws://'
+            + window.location.host
+            + '/ws/view/'
+            + game_id
+            + '/'
+        );
+
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            document.querySelector('#chat-log').value += (data.message + '\n');
+        };
+
+        chatSocket.onclose = function(e) {
+            console.error('Chat socket closed unexpectedly');
+        };
+
+        document.querySelector('#chat-message-input').focus();
+        document.querySelector('#chat-message-input').onkeyup = function(e) {
+            if (e.keyCode === 13) {  // enter, return
+                document.querySelector('#chat-message-submit').click();
+            }
+        };
+
+        document.querySelector('#chat-message-submit').onclick = function(e) {
+            const messageInputDom = document.querySelector('#chat-message-input');
+            const message = messageInputDom.value;
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            messageInputDom.value = '';
+        };
+    </script>
+</body>
+</html>
