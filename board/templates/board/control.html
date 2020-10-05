@@ -5,18 +5,52 @@
       <title>Control Panel</title>
   </head>
   <body>
-    Control panel for scoreboards.
-    game_id
-    inputs needed:
-      Team Name Inputs
-      Score + buttons
-      Score - buttons
-      Set Score field
-      Time...
-      Down...
-      Quarter...
-      End Game
-      Set Blurb
+  <h1>Score Controls</h1>
+  <p>
+    <button class="Score_button"
+        type="button" id="home_plus_seven">
+      Home + 7
+    </button>
+    <button class="Score_button"
+        type="button" id="home_sub_seven">
+      Home - 7
+    </button>
+    <button class="Score_button"
+        type="button" id="home_plus_three">
+      Home + 3
+    </button>
+    <button class="Score_button"
+        type="button" id="home_sub_three">
+      Home - 3
+    </button>
+    <form method="POST" id="home_form">
+      {% csrf_token %}
+      <div class="fieldWrapper" id="the_post">
+          {{ form.text }}
+      </div>
+      <div id="results"></div> <!-- errors go here -->
+      <input type="submit" value="Post" class="tiny button">
+    </form>
+  </p>
+  <p>
+    <button class="Score_button"
+        type="button" id="away_plus_seven">
+      Away + 7
+    </button>
+    <button class="Score_button"
+        type="button" id="away_sub_seven">
+      Away - 7
+    </button>
+    <button class="Score_button"
+        type="button" id="away_plus_three">
+      Away + 3
+    </button>
+    <button class="Score_button"
+        type="button" id="away_sub_three">
+      Away - 3
+    </button>
+  </p>
 
   </body>
+  <script src="board/control.js"></script>
   </html>
