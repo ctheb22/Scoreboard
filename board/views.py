@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from models import *
 from channels.layers import get_channel_layer
 from Init.py import get_or_create, get_view, get_timer_string
+from django.http import JsonResponse
 
 #################################################################################
 #CONTROL - 'create/'  'control/<char:game_id>'
@@ -57,10 +58,7 @@ def setName(request):
     else:
         game.awayTeam = name
     game.save()
-
-    updateChannels(  Channels.objects, team + 'Team', name)
-
-    return HttpResponse("Set Team name.")
+    return updateChannels(  Channels.objects, team + 'Team', name)
 
 #################################################################################
 #SCORE - 'team:<int:teamId>/=<int:score>'  'team:<int:teamId>/-<int:score>'
@@ -74,11 +72,9 @@ def addScore(request):
         runningScore = game.awayScore + score
         game.awayScore = runningScore
     game.save()
-    updateChannels(  Channels.objects,
+    return updateChannels(  Channels.objects,
                     team + 'Score',
                     runningScore)
-    #Update the Channel
-    return HttpResponse("Added Score.")
 
 def subScore(request):
     game = Game.objects.get(game=game_id)
@@ -88,11 +84,9 @@ def subScore(request):
     else:
         game.awayScore = runningScore
     game.save()
-    updateChannels(  Channels.objects,
+    return updateChannels(  Channels.objects,
                     team + 'Score',
                     runningScore)
-    #Update the Channel
-    return HttpResponse("Subbed Score.")
 
 def setScore(request):
     game = Game.objects.get(game=game_id)
@@ -102,12 +96,9 @@ def setScore(request):
     else:
         game.awayScore = runningScore
     game.save()
-
-    updateChannels(  Channels.objects,
+    return updateChannels(  Channels.objects,
                     team + 'Score',
                     runningScore)
-    #Update the Channel
-    return HttpResponse("Set Score.")
 
 #################################################################################
 #TIME - '<int:game_id>/timer/=<int:time>'  '<int:game_id>/timer/-<int:seconds>'
@@ -115,32 +106,26 @@ def addTime(request):
     game = Game.objects.get(game_id=game_id)
     game.time = addSetValue(game.time, time, 900)
     game.save()
-    updateChannels( Channels.objects,
-                    'time',
-                    get_timer_string(game.time))
-    #stateObject.timer = addSetValue(stateObject.timer, seconds, 0)
-    #Update the Channel
-    return HttpResponse("Added Time.")
+    return update_time(game.time)
 
 def subTime(request):
     game = Game.objects.get(game_id=game_id)
     game.time = subSetValue(game.time, time, 0)
     game.save()
-    updateChannels( Channels.objects,
-                    'time',
-                    get_timer_string(game.time))
-    return HttpResponse("Subbed Time.")
+    return update_time(game.time)
+    
 
 def setTime(request):
     game = Game.objects.get(game_id=game_id)
     game.time = setInRange(time, 0, 900)
     game.save()
-    updateChannels( Channels.objects,
+    return update_time(game.time)
+    
+def update_time(time):
+    time_string = get_timer_string(time)
+    return updateChannels( Channels.objects,
                     'time',
-                    get_timer_string(game.time))
-    #stateObject.timer = time
-    #Update the Channel
-    return HttpResponse("Set Time.")
+                    time_string)
 
 #################################################################################
 #QUARTER - '<int:game_id>/quarter/=<int:quarter>'  '<int:game_id>/quarter/+'
@@ -148,31 +133,24 @@ def addQuarter(request):
     game = Game.objects.get(game=game_id)
     game.quarter = addSetValue(game.quarter, 1, 4)
     game.save()
-    updateChannels(  Channels.objects,
-                    'quarter',
-                    game.quarter)
-    #Update the Channel
-    return HttpResponse("Added Quarter.")
+    return update_quarter(game.quarter)
 
 def subQuarter(request):
     game = Game.objects.get(game=game_id)
     game.quarter = subSetValue(game.quarter, 1, 1)
     game.save()
-    updateChannels(  Channels.objects,
-                    'quarter',
-                    game.quarter)
-    #Update the Channel
-    return HttpResponse("Subbed Quarter.")
+    return update_quarter(game.quarter)
 
 def setQuarter(request):
     game = Game.objects.get(game=game_id)
     game.quarter = setInRange(quarter, 1, 4)
     game.save()
-    updateChannels(  Channels.objects,
+    return update_quarter(game.quarter)
+    
+def update_quarter(quarter):
+    return updateChannels(  Channels.objects,
                     'quarter',
-                    game.quarter)
-    #Update the Channel
-    return HttpResponse("Set Quarter.")
+                    quarter)
 
 #################################################################################
 #DOWN - '<int:game_id>/down/=<int:down>'  '<int:game_id>/quarter/+'
@@ -180,47 +158,42 @@ def addDown(request):
     game = Game.objects.get(game=game_id)
     game.down = addSetValue(game.down, 1, 4)
     game.save()
-    updateChannels(  Channels.objects,
-                    'down',
-                    game.down)
-    #Update the Channel
-    return HttpResponse("Added Down.")
+    return update_down(game.down)
 
 def subDown(request):
     game = Game.objects.get(game=game_id)
     game.down = subSetValue(game.down, 1, 1)
     game.save()
-    updateChannels(  Channels.objects,
-                    'down',
-                    game.down)
-    #Update the Channel
-    return HttpResponse("Subbed Down.")
+    return update_down(game.down)
 
 def setDown(request):
     game = Game.objects.get(game=game_id)
     game.down = setInRange(down, 1, 4)
     game.save()
-    updateChannels(  Channels.objects,
+    return update_down(game.down)
+    
+def update_down(down):
+    return updateChannels(  Channels.objects,
                     'down',
-                    game.down)
-    #Update the Channel
-    return HttpResponse("Set Down.")
+                    down)
 
 ################################################################################
 #ADMIN
 def setBlurb(request):
     game = Game.objects.get(game=game_id)
-    updateChannels(  Channels.objects,
+    game.title = request.post['blurb']
+    game.save()
+    return updateChannels(  Channels.objects,
                     'blurb',
                     game.blurb)
-    return HttpResponse("Set Blurb.")
 
 def setTitle(request):
     game = Game.objects.get(game=game_id)
-    updateChannels(  Channels.objects,
+    game.title = request.post['title']
+    game.save()
+    return updateChannels(  Channels.objects,
                     'title',
                     game.title)
-    return HttpResponse("Set Title")
 
 def setPossession(request):
     return HttpResponse("Set Possession.")
@@ -255,3 +228,5 @@ def updateChannels(channels, type, value):
             "type": type,
             "data": value,
         })
+    return JsonResponse({   "type": type,
+                            "data": value})

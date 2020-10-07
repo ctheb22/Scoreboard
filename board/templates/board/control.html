@@ -3,39 +3,22 @@
   <head>
       <meta charset="utf-8"/>
       <title>Control Panel</title>
+	  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
+	  {% load static %}
+	  <script src="{% static 'scripts/control.js' %}"></script>
   </head>
   <body>
-  <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
-  <table>
-    <tr>
-      <th colspan="3" id="title_cell" class="title_cell">{{game.title}}</th>
-    </tr>
-    <tr>
-      <td id="home_name_cell" colspan="2" class="home_name_cell">{{game.homeTeam}}</td>
-      <td id="home_score_cell" class="home_score_cell">{{game.homeScore}}</td>
-    </tr>
-    <tr>
-      <td id="away_name_cell" colspan="2" class="away_name_cell">{{game.awayTeam}}</td>
-      <td id="away_score_cell" class="away_score_cell">{{game.awayScore}}</td>
-    </tr>
-    <tr>
-      <td id="game_quarter_cell" class="game_quarter_cell">{{game.quarter}}</td>
-      <td id="game_time_cell" class="game_time_cell">{{time}}</td>
-      <td id="game_down_cell" class="game_down_cell">{{game.down}}</td>
-    </tr>
-    <tr>
-      <td colspan="3" id="blurb_cell" class="blurb_cell">{{game.blurb}}</td>
-    </tr>
-  </table>
+	{% include "board/widget.html"}
+	{{ game|json_script:"game" }}
   <h2>Title Control</h2>
   <p>
-    <form method="POST" id="away_name_form">
+    <form method="POST" id="title_form">
       {% csrf_token %}
-      <div class="fieldWrapper" id="away_name_wrapper">
-          <input type="text" id="away_name" maxlength="30"></input>
+      <div class="fieldWrapper" id="title_wrapper">
+          <input type="text" id="title_input" maxlength="30">{{ game.title }}</input>
       </div>
       <div id="results"></div> <!-- errors go here -->
-      <input type="submit" value="Set Away Name" class="submit_button">
+      <input type="submit" value="Set Title" class="submit_button">
     </form>
   </p>
   <h2>Score Controls</h2>
@@ -44,7 +27,7 @@
     <form method="POST" id="home_name_form">
       {% csrf_token %}
       <div class="fieldWrapper" id="home_name_wrapper">
-          <input type="text" id="home_name" maxlength="30"></input>
+          <input type="text" id="home_name" maxlength="30">{{ game.homeTeam }}</input>
       </div>
       <div id="results"></div> <!-- errors go here -->
       <input type="submit" value="Set Home Name" class="submit_button">
@@ -69,7 +52,7 @@
     <form method="POST" id="home_score_form">
       {% csrf_token %}
       <div class="fieldWrapper" id="home_score_wrapper">
-          <input type="text" id="home_score" maxlength="1"></input>
+          <input type="text" id="home_score" maxlength="1">{{ game.homeScore }}</input>
       </div>
       <div id="results"></div> <!-- errors go here -->
       <input type="submit" value="Set Home Score" class="submit_button">
@@ -80,7 +63,7 @@
     <form method="POST" id="away_name_form">
       {% csrf_token %}
       <div class="fieldWrapper" id="away_name_wrapper">
-          <input type="text" id="away_name" maxlength="30"></input>
+          <input type="text" id="away_name" maxlength="30">{{ game.awayTeam }}</input>
       </div>
       <div id="results"></div> <!-- errors go here -->
       <input type="submit" value="Set Away Name" class="submit_button">
@@ -105,7 +88,7 @@
     <form method="POST" id="away_score_form">
       {% csrf_token %}
       <div class="fieldWrapper" id="away_score_wrapper">
-          <input type="text" id="away_score" maxlength="3"></input>
+          <input type="text" id="away_score" maxlength="3">{{ game.awayScore }}</input>
       </div>
       <div id="results"></div> <!-- errors go here -->
       <input type="submit" value="Set Away Score" class="submit_button">
@@ -117,7 +100,7 @@
     <form method="POST" id="time_form">
       {% csrf_token %}
       <div class="fieldWrapper" id="time_wrapper">
-          <input type="time" id="time_input"></input>
+          <input type="time" id="time_input">{{ time }}</input>
       </div>
       <div id="results"></div> <!-- errors go here -->
       <input type="submit" value="Set Timer" class="submit_button">
@@ -145,7 +128,7 @@
     <form method="POST" id="quarter_form">
       {% csrf_token %}
       <div class="fieldWrapper" id="quarter_wrapper">
-          <input type="number" id="quarter_input" maxlength="1"></input>
+          <input type="number" id="quarter_input" maxlength="1">{{ game.quarter }}</input>
       </div>
       <div id="results"></div> <!-- errors go here -->
       <input type="submit" value="Set Quarter" class="submit_button">
@@ -164,7 +147,7 @@
     <form method="POST" id="down_form">
       {% csrf_token %}
       <div class="fieldWrapper" id="down_wrapper">
-          <input type="number" id="down_input" maxlength="1"></input>
+          <input type="number" id="down_input" maxlength="1">{{ game.down }}</input>
       </div>
       <div id="results"></div> <!-- errors go here -->
       <input type="submit" value="Set Down" class="submit_button">
@@ -181,7 +164,7 @@
 <h3>Blurb Controls</h3>
   <p>
     <div class="fieldWrapper" id="blurb_input">
-        <textarea name="blurb_area" form="blurb_form" maxlength="300"></textarea>
+        <textarea id="blurb_input_area" name="blurb_area" form="blurb_form" maxlength="300">{{ game.blurb }}</textarea>
     </div>
     <form method="POST" id="blurb_form">
       {% csrf_token %}
@@ -189,7 +172,5 @@
       <input type="submit" value="Submit Blurb" class="submit_button">
     </form>
   </p>
-
   </body>
-  <script src={% static "board/scripts/control.js" %}></script>
   </html>

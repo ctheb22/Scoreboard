@@ -1,24 +1,21 @@
-{% extends "control.html" %}
-{% block widget %}
 <table>
   <tr>
-    <th colspan="3" id="title_cell" class="title_cell">This is the Title</th>
+    <th colspan="3" id="title_cell" class="title_cell">{{ game.title }}</th>
   </tr>
   <tr>
-    <td id="home_name_cell" colspan="2" class="home_name_cell">Home</td>
-    <td id="home_score_cell" class="home_score_cell">0</td>
+    <td id="home_name_cell" colspan="2" class="home_name_cell">{{ game.homeTeam }}</td>
+    <td id="home_score_cell" class="home_score_cell">{{ game.homeScore }}</td>
   </tr>
   <tr>
-    <td id="away_name_cell" colspan="2" class="away_name_cell">Away</td>
-    <td id="away_score_cell" class="away_score_cell">0</td>
+    <td id="away_name_cell" colspan="2" class="away_name_cell">{{ game.awayTeam }}</td>
+    <td id="away_score_cell" class="away_score_cell">{{ game.awayScore }}</td>
   </tr>
   <tr>
-    <td id="game_quarter_cell" class="game_quarter_cell">1</td>
-    <td id="game_time_cell" class="game_time_cell">15:00</td>:
-    <td id="game_down_cell" class="game_down_cell">1</td>
+    <td id="game_quarter_cell" class="game_quarter_cell">{{ game.quarter }}</td>
+    <td id="game_time_cell" class="game_time_cell">{{ time }}</td>
+    <td id="game_down_cell" class="game_down_cell">{{ game.down }}</td>
   </tr>
   <tr>
-    <td colspan="3" id="blurb_cell" class="blurb_cell">This is the blurb</td>
+    <td colspan="3" id="blurb_cell" class="blurb_cell">{{ game.blurb }}</td>
   </tr>
 </table>
-{% endblock %}
