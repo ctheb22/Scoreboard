@@ -4,27 +4,10 @@
 <head>
     <meta charset="utf-8"/>
     <title>View Panel</title>
-</head>
-<body>
-  This is the obs View file.
-  Initialize the websocket from here, connect everything and set up the layout.
-  The websocket url should include the game_id, so that when we're accepting
-  the connection in the consumer, we know which game_id this channel is meant
-  to be associated with. This is prepped and sent from the "views.getView" function
-  which always has a game_id attribute.
-  Message types:
-    home_team
-    away_team
-    score
-    down
-    quarter
-
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br>
-    <input id="chat-message-input" type="text" size="100"><br>
-    <input id="chat-message-submit" type="button" value="Send">
-    {{ game_id|json_script:"game-id" }}
+    {{ game|json_script:"game" }}
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
     <script>
-        const game_id = JSON.parse(document.getElementById('game-id').textContent);
+        const game_id = JSON.parse(document.getElementById('game').gameId);
 
         const viewSocket = new WebSocket(
             'ws://'
@@ -36,28 +19,65 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
-            document.querySelector('#chat-log').value += (data.message + '\n');
+            var type = data.type;
+            switch(type){
+              case "homeTeam":
+                document.querySelector('#home_name_cell').textContent = data.value;
+                break;
+              case "awayTeam":
+                document.querySelector('#away_name_cell').textContent = data.value;
+                break;
+              case "homeScore":
+                document.querySelector('#home_score_cell').textContent = data.value;
+                break;
+              case "awayScore":
+                document.querySelector('#away_score_cell').textContent = data.value;
+                break;
+              case "time":
+                document.querySelector('#game_time_cell').textContent = data.value;
+                break;
+              case "quarter":
+                document.querySelector('#game_quarter_cell').textContent = data.value;
+                break;
+              case "down":
+                document.querySelector('#game_down_cell').textContent = data.value;
+                break;
+              case "blurb":
+                document.querySelector('#blurb_cell').textContent = data.value;
+                break;
+              case "title":
+                document.querySelector('#title_cell').textContent = data.value;
+                break;
+              default:
+            }
         };
 
         chatSocket.onclose = function(e) {
             console.error('Chat socket closed unexpectedly');
         };
-
-        document.querySelector('#chat-message-input').focus();
-        document.querySelector('#chat-message-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#chat-message-submit').click();
-            }
-        };
-
-        document.querySelector('#chat-message-submit').onclick = function(e) {
-            const messageInputDom = document.querySelector('#chat-message-input');
-            const message = messageInputDom.value;
-            chatSocket.send(JSON.stringify({
-                'message': message
-            }));
-            messageInputDom.value = '';
-        };
     </script>
+</head>
+<body>
+    <table>
+      <tr>
+        <th colspan="3" id="title_cell" class="title_cell">{{game.title}}</th>
+      </tr>
+      <tr>
+        <td id="home_name_cell" colspan="2" class="home_name_cell">{{game.homeTeam}}</td>
+        <td id="home_score_cell" class="home_score_cell">{{game.homeScore}}</td>
+      </tr>
+      <tr>
+        <td id="away_name_cell" colspan="2" class="away_name_cell">{{game.awayTeam}}</td>
+        <td id="away_score_cell" class="away_score_cell">{{game.awayScore}}</td>
+      </tr>
+      <tr>
+        <td id="game_quarter_cell" class="game_quarter_cell">{{game.quarter}}</td>
+        <td id="game_time_cell" class="game_time_cell">{{time}}</td>
+        <td id="game_down_cell" class="game_down_cell">{{game.down}}</td>
+      </tr>
+      <tr>
+        <td colspan="3" id="blurb_cell" class="blurb_cell">{{game.blurb}}</td>
+      </tr>
+    </table>
 </body>
 </html>

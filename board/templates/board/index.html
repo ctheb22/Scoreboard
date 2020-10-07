@@ -1,12 +1,22 @@
+#NOT CURRENTLY USED
+
 <!DOCTYPE html>
   <html>
   <head>
       <meta charset="utf-8"/>
-      <title>View Index</title>
+      <title>Control Index</title>
   </head>
+  <h1>Control Index</h1>
   <body>
-    context contains "games" for active games.
-    list them, and provide links to their control pages.
-    add a button to create a game.
+    {% if games %}
+    <ul>
+    {% for game in games %}
+        <li><a href="/control/{{ game.gameId }}">{{game.title}} {{ game.homeTeam.name }} vs. {{ game.awayTeam.name }} Game</a></li>
+    {% endfor %}
+    </ul>
+    {% else %}
+        <p>No games are currently active.</p>
+    {% endif %}
+    <a href="/create">Create a new game.</a>
   </body>
   </html>
